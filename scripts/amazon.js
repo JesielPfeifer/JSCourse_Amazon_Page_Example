@@ -1,8 +1,12 @@
 import { products } from "../data/products.js";
-import { cart, addToCart } from "../data/cart.js";
+import { cart, addToCart, getCartQuantity } from "../data/cart.js";
 import { formatCurrency } from "./utils/money.js";
 
 let productsHTML = "";
+
+function showCartQuantity() {
+  document.querySelector(".js-cart-quantity").innerHTML = getCartQuantity();
+}
 
 products.forEach((product) => {
   productsHTML += `
@@ -57,21 +61,10 @@ products.forEach((product) => {
     </div>`;
 });
 
-document.querySelector(".js-products-grid").innerHTML = productsHTML;
-
-function updateCartQuantity(addedProduct) {
-  let cartQuantity = 0;
-
-  addedProduct.classList.add("js-show-added-message");
-
-  cart.forEach((cartItem) => {
-    cartQuantity += cartItem.quantity;
-  });
-
-  document.querySelector(".js-cart-quantity").innerHTML = cartQuantity;
-}
-
 const addedMessageTimeout = [];
+showCartQuantity();
+
+document.querySelector(".js-products-grid").innerHTML = productsHTML;
 
 document.querySelectorAll(".js-add-to-cart").forEach((button) => {
   button.addEventListener("click", () => {
@@ -81,7 +74,8 @@ document.querySelectorAll(".js-add-to-cart").forEach((button) => {
       document.querySelector(`.js-quantity-selector-${productId}`).value
     );
     addToCart(productId, quantitySelected);
-    updateCartQuantity(addedProduct);
+    addedProduct.classList.add("js-show-added-message");
+    document.querySelector(".js-cart-quantity").innerHTML = getCartQuantity();
 
     /* 
       This was a diferent way to handle fast clicks to clear previous timeouts
